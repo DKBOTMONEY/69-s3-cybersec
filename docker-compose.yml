@@ -1,14 +1,12 @@
-version: '3.8'
-
 services:
   db:
     container_name: 69-s3-db
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: patipan
-      POSTGRES_PASSWORD: patipan
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "54327:5432"
     volumes:
@@ -19,8 +17,8 @@ services:
     image: dpage/pgadmin4
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
       - "8080:80"
     depends_on:
@@ -34,12 +32,12 @@ services:
     environment:
       - DATABASE_CLIENT=postgres
       - DATABASE_HOST=db           # ชี้ไปยังชื่อ service 'db' ด้านบน
-      - DATABASE_PORT=5432         # ใช้พอร์ตภายในของ Container (5432) ไม่ใช่พอร์ตที่แมปออกข้างนอก (54327)
-      - DATABASE_NAME=postgres     # ดึงค่าจาก POSTGRES_DB
-      - DATABASE_USERNAME=patipan  # ดึงค่าจาก POSTGRES_USER
-      - DATABASE_PASSWORD=patipan  # ดึงค่าจาก POSTGRES_PASSWORD
+      - DATABASE_PORT=5432         # ใช้พอร์ตภายในของ Container
+      - DATABASE_NAME=${DB_NAME}   # ดึงค่าจาก .env
+      - DATABASE_USERNAME=${DB_USER} # ดึงค่าจาก .env
+      - DATABASE_PASSWORD=${DB_PASSWORD} # ดึงค่าจาก .env
     ports:
-      - "8083:1337"                # หลบพอร์ต 8080 ที่ชนกับ pgadmin มาใช้ 8083 แทน
+      - "8083:1337"
     depends_on:
       - db                         # รอให้ db สตาร์ทก่อน
 
