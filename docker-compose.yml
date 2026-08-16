@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "127.0.0.1:54327:5432"
+      - "127.0.0.1:${DB_PORT:-54327}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -20,7 +20,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
-      - "127.0.0.1:8080:80"
+      - "127.0.0.1:${PGADMIN_PORT:-8080}:80"
     depends_on:
       - db
 
@@ -30,14 +30,14 @@ services:
     image: prawee/strapi
     restart: unless-stopped
     environment:
-      - DATABASE_CLIENT=postgres
-      - DATABASE_HOST=db           # ชี้ไปยังชื่อ service 'db' ด้านบน
-      - DATABASE_PORT=5432         # ใช้พอร์ตภายในของ Container
-      - DATABASE_NAME=${DB_NAME}   # ดึงค่าจาก .env
-      - DATABASE_USERNAME=${DB_USER} # ดึงค่าจาก .env
-      - DATABASE_PASSWORD=${DB_PASSWORD} # ดึงค่าจาก .env
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${DB_NAME}
+      DATABASE_USERNAME: ${DB_USER}
+      DATABASE_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "127.0.0.1:8083:1337"
+      - "127.0.0.1:${APP_PORT:-8083}:1337"
     depends_on:
       - db                         # รอให้ db สตาร์ทก่อน
 
