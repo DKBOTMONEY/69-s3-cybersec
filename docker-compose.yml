@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "54327:5432"
+      - "127.0.0.1:54327:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -20,7 +20,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
-      - "8080:80"
+      - "127.0.0.1:8080:80"
     depends_on:
       - db
 
@@ -37,7 +37,7 @@ services:
       - DATABASE_USERNAME=${DB_USER} # ดึงค่าจาก .env
       - DATABASE_PASSWORD=${DB_PASSWORD} # ดึงค่าจาก .env
     ports:
-      - "8083:1337"
+      - "127.0.0.1:8083:1337"
     depends_on:
       - db                         # รอให้ db สตาร์ทก่อน
 
