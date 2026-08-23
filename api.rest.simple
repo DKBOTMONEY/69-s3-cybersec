@@ -1,0 +1,63 @@
+# REST API
+
+## Admin Login
+POST http://localhost:8083/admin/login
+Content-Type: application/json
+
+{
+  "email": "",
+  "password": "",
+  "rememberMe": true
+}
+
+### User Login
+POST http://localhost:8083/api/auth/local
+Content-Type: application/json
+
+{
+  "identifier": "",
+  "password": ""
+}
+
+### User Register
+POST http://localhost:8083/api/auth/local/register
+Content-Type: application/json
+
+{
+  "username": "",
+  "email": "",
+  "password": ""
+}
+
+### Forgot Password
+POST http://localhost:8083/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": ""
+}
+
+### Reset Password
+POST http://localhost:8083/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "code": "",
+  "password": "",
+  "passwordConfirmation": ""
+}
+
+### Profile (Get me)
+GET http://localhost:8083/api/users/me
+Authorization: Bearer YOUR_TOKEN_HERE
+
+### Change Password
+POST http://localhost:8083/api/auth/change-password
+Authorization: Bearer YOUR_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "currentPassword": "",
+  "password": "",
+  "passwordConfirmation": ""
+}
