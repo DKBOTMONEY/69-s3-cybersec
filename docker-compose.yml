@@ -11,6 +11,18 @@ services:
       - "127.0.0.1:${DB_PORT:-54327}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - internal_net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   pgadmin:
     container_name: 69-s3-admin
@@ -21,8 +33,34 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
       - "127.0.0.1:${PGADMIN_PORT:-8080}:80"
+    networks:
+      - internal_net
+      - app_net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
+  # --- Mailpit (Mock SMTP Server สำหรับ Reset Password & Email Verification) ---
+  mailpit:
+    container_name: 69-s3-mailpit
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      # Web UI สำหรับดูอีเมลที่ส่งออกจากระบบ
+      - "127.0.0.1:${MAILPIT_PORT:-8025}:8025"
+    networks:
+      - internal_net
+      - app_net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
 
   # --- เพิ่ม Service ของ App (Strapi) ---
   my_app:
@@ -31,15 +69,45 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_CLIENT: postgres
-      DATABASE_HOST: db
+      DATABASE_HOST: ${DB_HOST}
       DATABASE_PORT: 5432
       DATABASE_NAME: ${DB_NAME}
       DATABASE_USERNAME: ${DB_USER}
       DATABASE_PASSWORD: ${DB_PASSWORD}
+      # Security secrets (มาจาก .env) -> ระบุแบบบังคับ ไม่ใช้ค่า default
+      APP_KEYS: ${APP_KEYS:?APP_KEYS is required}
+      API_TOKEN_SALT: ${API_TOKEN_SALT:?API_TOKEN_SALT is required}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:?ADMIN_JWT_SECRET is required}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT:?TRANSFER_TOKEN_SALT is required}
+      # Mail / SMTP Server Configuration
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
     ports:
       - "127.0.0.1:${APP_PORT:-8083}:1337"
+    volumes:
+      - ./config/plugins.js:/opt/app/config/plugins.js:ro
+    networks:
+      - internal_net
+      - app_net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1024M
     depends_on:
-      - db                         # รอให้ db สตาร์ทก่อน
+      db:
+        condition: service_healthy   # รอ db พร้อมใช้งานก่อน
+      mailpit:
+        condition: service_started
 
 volumes:
   pgdata:
+
+networks:
+  # เครือข่ายภายในระหว่าง DB และ Services
+  internal_net:
+    driver: bridge
+  # เครือข่ายสำหรับเข้าถึง Applications
+  app_net:
+    driver: bridge

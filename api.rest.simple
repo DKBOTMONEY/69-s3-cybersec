@@ -1,63 +1,180 @@
-# REST API
+# ==============================================================================
+# REST API Collection (Template)
+# Cyber Security Lab - Identity & Access Management (IAM)
+# นักศึกษา: Patipan plonying (0568604056xxx)
+# โครงสร้างหัวข้อตามข้อกำหนดอาจารย์: 1. Admin Section | 2. User Section | 3. Security & CIA Hardening
+# ==============================================================================
 
-## Admin Login
+## 1. Admin Section
+
+### 1.1 Login
 POST http://localhost:8083/admin/login
 Content-Type: application/json
 
 {
-  "email": "",
-  "password": "",
-  "rememberMe": true
+    "email": "",
+    "password": "",
+    "rememberMe": true
 }
 
-### User Login
-POST http://localhost:8083/api/auth/local
+### 1.2 Signup (Create Admin User via API)
+POST http://localhost:8083/admin/users
+Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
 Content-Type: application/json
 
 {
-  "identifier": "",
-  "password": ""
+    "firstname": "",
+    "lastname": "",
+    "email": "",
+    "roles": [1]
 }
 
-### User Register
+### 1.3 Forgot Password (Admin)
+POST http://localhost:8083/admin/forgot-password
+Content-Type: application/json
+
+{
+    "email": ""
+}
+
+### 1.3.1 Reset Password (Admin)
+POST http://localhost:8083/admin/reset-password
+Content-Type: application/json
+
+{
+    "code": "",
+    "password": "",
+    "passwordConfirmation": ""
+}
+
+### 1.4 Profile
+GET http://localhost:8083/admin/users/me
+Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+
+### 1.5 Logout (Admin)
+POST http://localhost:8083/admin/logout
+Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+
+
+# ==============================================================================
+## 2. User Section
+# ==============================================================================
+
+### 2.1 Signup / Register (User)
 POST http://localhost:8083/api/auth/local/register
 Content-Type: application/json
 
 {
-  "username": "",
-  "email": "",
-  "password": ""
+    "username": "",
+    "email": "",
+    "password": ""
 }
 
-### Forgot Password
+### 2.2 Login (User)
+POST http://localhost:8083/api/auth/local
+Content-Type: application/json
+
+{
+    "identifier": "",
+    "password": ""
+}
+
+### 2.3 Profile (Get Me)
+GET http://localhost:8083/api/users/me
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+
+### 2.4 Update Profile (Edit Me)
+PUT http://localhost:8083/api/users/me
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+Content-Type: application/json
+
+{
+    "username": "",
+    "email": "",
+    "firstname": "",
+    "lastname": ""
+}
+
+### 2.5 Change Password
+POST http://localhost:8083/api/auth/change-password
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+Content-Type: application/json
+
+{
+    "currentPassword": "",
+    "password": "",
+    "passwordConfirmation": ""
+}
+
+### 2.6 Forgot Password (User)
 POST http://localhost:8083/api/auth/forgot-password
 Content-Type: application/json
 
 {
-  "email": ""
+    "email": ""
 }
 
-### Reset Password
+### 2.7 Reset Password (User)
 POST http://localhost:8083/api/auth/reset-password
 Content-Type: application/json
 
 {
-  "code": "",
-  "password": "",
-  "passwordConfirmation": ""
+    "code": "",
+    "password": "",
+    "passwordConfirmation": ""
 }
 
-### Profile (Get me)
-GET http://localhost:8083/api/users/me
-Authorization: Bearer YOUR_TOKEN_HERE
+### 2.8 Email Confirmation
+GET http://localhost:8083/api/auth/email-confirmation?confirmation=CONFIRMATION_CODE_FROM_EMAIL
 
-### Change Password
-POST http://localhost:8083/api/auth/change-password
-Authorization: Bearer YOUR_TOKEN_HERE
+### 2.9 Resend Email Confirmation
+POST http://localhost:8083/api/auth/send-email-confirmation
 Content-Type: application/json
 
 {
-  "currentPassword": "",
-  "password": "",
-  "passwordConfirmation": ""
+    "email": ""
+}
+
+### 2.10 Logout (User)
+POST http://localhost:8083/api/auth/logout
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+
+### 2.11 Refresh Token
+POST http://localhost:8083/api/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": ""
+}
+
+### 2.12 Delete Account (PDPA / Right to be Forgotten)
+DELETE http://localhost:8083/api/users/me
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+
+
+# ==============================================================================
+## 3. Security & CIA Hardening (คะแนนพิเศษด้าน Cyber Security)
+# ==============================================================================
+
+### 3.1 Availability: Service Health Check
+GET http://localhost:8083/_health
+
+### 3.2 Authorization: RBAC Get Roles (Admin Only)
+GET http://localhost:8083/api/users-permissions/roles
+Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+
+### 3.3 Negative Test (Confidentiality): Unauthorized Access (คาดหวัง 403 Forbidden)
+GET http://localhost:8083/api/users/me
+
+### 3.4 Negative Test (Integrity): Privilege Escalation (คาดหวัง 401 Unauthorized)
+GET http://localhost:8083/admin/users/me
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+
+### 3.5 Negative Test (Availability): Brute Force Simulation (คาดหวัง 400 Bad Request)
+POST http://localhost:8083/api/auth/local
+Content-Type: application/json
+
+{
+    "identifier": "",
+    "password": ""
 }
