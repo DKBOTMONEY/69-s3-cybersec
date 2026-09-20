@@ -23,6 +23,16 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    # --- IAAA Accountability: บันทึกประวัติการเชื่อมต่อและ Authenticate ของฐานข้อมูล ---
+    command:
+      - "postgres"
+      - "-c"
+      - "log_connections=on"
+      - "-c"
+      - "log_disconnections=on"
+      - "-c"
+      - "log_line_prefix=%m [%p] %q%u@%d "
+
 
   pgadmin:
     container_name: 69-s3-admin
@@ -50,6 +60,8 @@ services:
     container_name: 69-s3-mailpit
     image: axllent/mailpit:latest
     restart: unless-stopped
+    environment:
+      MP_UI_AUTH: ${MAILPIT_UI_AUTH:-}
     ports:
       # Web UI สำหรับดูอีเมลที่ส่งออกจากระบบ
       - "127.0.0.1:${MAILPIT_PORT:-8025}:8025"
@@ -87,6 +99,8 @@ services:
       - "127.0.0.1:${APP_PORT:-8083}:1337"
     volumes:
       - ./config/plugins.js:/opt/app/config/plugins.js:ro
+      - ./config/middlewares.js:/opt/app/config/middlewares.js:ro
+      - ./src/middlewares/password-policy.js:/opt/app/src/middlewares/password-policy.js:ro
     networks:
       - internal_net
       - app_net

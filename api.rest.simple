@@ -1,180 +1,103 @@
-# ==============================================================================
-# REST API Collection (Template)
-# Cyber Security Lab - Identity & Access Management (IAM)
-# นักศึกษา: Patipan plonying (0568604056xxx)
-# โครงสร้างหัวข้อตามข้อกำหนดอาจารย์: 1. Admin Section | 2. User Section | 3. Security & CIA Hardening
-# ==============================================================================
+# REST
+
+@adminEmail = {{$dotenv ADMIN_EMAIL}}
+@adminPassword = {{$dotenv ADMIN_PASSWORD}}
+@adminFirstname = {{$dotenv ADMIN_FIRSTNAME}}
+@adminLastname = {{$dotenv ADMIN_LASTNAME}}
+@adminResetToken = {{$dotenv ADMIN_RESET_TOKEN}}
+@adminNewPassword = {{$dotenv ADMIN_NEW_PASSWORD}}
+@rememberMe = {{$dotenv REMEMBER_ME}}
+@adminToken = {{$dotenv ADMIN_TOKEN}}
+@userUsername = {{$dotenv USER_USERNAME}}
+@userEmail = {{$dotenv USER_EMAIL}}
+@userPassword = {{$dotenv USER_PASSWORD}}
+@userIdentifier = {{$dotenv USER_IDENTIFIER}}
+@userResetCode = {{$dotenv USER_RESET_CODE}}
+@userNewPassword = {{$dotenv USER_NEW_PASSWORD}}
+@userToken = {{$dotenv USER_TOKEN}}
 
 ## 1. Admin Section
-
 ### 1.1 Login
-POST http://localhost:8083/admin/login
+POST http://localhost:9093/admin/login
 Content-Type: application/json
 
 {
-    "email": "",
-    "password": "",
-    "rememberMe": true
+    "email": "{{adminEmail}}",
+    "password": "{{adminPassword}}",
+    "rememberMe": {{rememberMe}}
 }
 
-### 1.2 Signup (Create Admin User via API)
-POST http://localhost:8083/admin/users
-Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+### 1.2 Signup
+POST http://localhost:9093/admin/register
 Content-Type: application/json
 
 {
-    "firstname": "",
-    "lastname": "",
-    "email": "",
-    "roles": [1]
+    "firstname": "{{adminFirstname}}",
+    "lastname": "{{adminLastname}}",
+    "email": "{{adminEmail}}",
+    "password": "{{adminPassword}}"
 }
 
-### 1.3 Forgot Password (Admin)
-POST http://localhost:8083/admin/forgot-password
+### 1.3 Forgot Password
+POST http://localhost:9093/admin/forgot-password
 Content-Type: application/json
 
 {
-    "email": ""
+    "email": "{{adminEmail}}"
 }
 
-### 1.3.1 Reset Password (Admin)
-POST http://localhost:8083/admin/reset-password
+### 1.3.1 Reset Password
+POST http://localhost:9093/admin/reset-password
 Content-Type: application/json
 
 {
-    "code": "",
-    "password": "",
-    "passwordConfirmation": ""
+    "resetPasswordToken": "{{adminResetToken}}",
+    "password": "{{adminNewPassword}}"
 }
 
 ### 1.4 Profile
-GET http://localhost:8083/admin/users/me
-Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
-
-### 1.5 Logout (Admin)
-POST http://localhost:8083/admin/logout
-Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+GET http://localhost:9093/admin/me
+Authorization: Bearer {{adminToken}}
 
 
-# ==============================================================================
 ## 2. User Section
-# ==============================================================================
-
-### 2.1 Signup / Register (User)
-POST http://localhost:8083/api/auth/local/register
+### 2.1 Login
+POST http://localhost:9093/api/auth/local
 Content-Type: application/json
 
 {
-    "username": "",
-    "email": "",
-    "password": ""
+    "identifier": "{{userIdentifier}}",
+    "password": "{{userPassword}}"
 }
 
-### 2.2 Login (User)
-POST http://localhost:8083/api/auth/local
+### 2.2 Signup
+POST http://localhost:9093/api/auth/local/register
 Content-Type: application/json
 
 {
-    "identifier": "",
-    "password": ""
+    "username": "{{userUsername}}",
+    "email": "{{userEmail}}",
+    "password": "{{userPassword}}"
 }
 
-### 2.3 Profile (Get Me)
-GET http://localhost:8083/api/users/me
-Authorization: Bearer YOUR_USER_TOKEN_HERE
-
-### 2.4 Update Profile (Edit Me)
-PUT http://localhost:8083/api/users/me
-Authorization: Bearer YOUR_USER_TOKEN_HERE
+### 2.3 Forgot Password
+POST http://localhost:9093/api/auth/forgot-password
 Content-Type: application/json
 
 {
-    "username": "",
-    "email": "",
-    "firstname": "",
-    "lastname": ""
+    "email": "{{userEmail}}"
 }
 
-### 2.5 Change Password
-POST http://localhost:8083/api/auth/change-password
-Authorization: Bearer YOUR_USER_TOKEN_HERE
+### 2.3.1 Reset Password
+POST http://localhost:9093/api/auth/reset-password
 Content-Type: application/json
 
 {
-    "currentPassword": "",
-    "password": "",
-    "passwordConfirmation": ""
+    "code": "{{userResetCode}}",
+    "password": "{{userNewPassword}}",
+    "passwordConfirmation": "{{userNewPassword}}"
 }
 
-### 2.6 Forgot Password (User)
-POST http://localhost:8083/api/auth/forgot-password
-Content-Type: application/json
-
-{
-    "email": ""
-}
-
-### 2.7 Reset Password (User)
-POST http://localhost:8083/api/auth/reset-password
-Content-Type: application/json
-
-{
-    "code": "",
-    "password": "",
-    "passwordConfirmation": ""
-}
-
-### 2.8 Email Confirmation
-GET http://localhost:8083/api/auth/email-confirmation?confirmation=CONFIRMATION_CODE_FROM_EMAIL
-
-### 2.9 Resend Email Confirmation
-POST http://localhost:8083/api/auth/send-email-confirmation
-Content-Type: application/json
-
-{
-    "email": ""
-}
-
-### 2.10 Logout (User)
-POST http://localhost:8083/api/auth/logout
-Authorization: Bearer YOUR_USER_TOKEN_HERE
-
-### 2.11 Refresh Token
-POST http://localhost:8083/api/auth/refresh-token
-Content-Type: application/json
-
-{
-    "refreshToken": ""
-}
-
-### 2.12 Delete Account (PDPA / Right to be Forgotten)
-DELETE http://localhost:8083/api/users/me
-Authorization: Bearer YOUR_USER_TOKEN_HERE
-
-
-# ==============================================================================
-## 3. Security & CIA Hardening (คะแนนพิเศษด้าน Cyber Security)
-# ==============================================================================
-
-### 3.1 Availability: Service Health Check
-GET http://localhost:8083/_health
-
-### 3.2 Authorization: RBAC Get Roles (Admin Only)
-GET http://localhost:8083/api/users-permissions/roles
-Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
-
-### 3.3 Negative Test (Confidentiality): Unauthorized Access (คาดหวัง 403 Forbidden)
-GET http://localhost:8083/api/users/me
-
-### 3.4 Negative Test (Integrity): Privilege Escalation (คาดหวัง 401 Unauthorized)
-GET http://localhost:8083/admin/users/me
-Authorization: Bearer YOUR_USER_TOKEN_HERE
-
-### 3.5 Negative Test (Availability): Brute Force Simulation (คาดหวัง 400 Bad Request)
-POST http://localhost:8083/api/auth/local
-Content-Type: application/json
-
-{
-    "identifier": "",
-    "password": ""
-}
+### 2.4 Profile
+GET http://localhost:9093/api/users/me
+Authorization: Bearer {{userToken}}
