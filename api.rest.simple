@@ -15,6 +15,20 @@
 @userResetCode = {{$dotenv USER_RESET_CODE}}
 @userNewPassword = {{$dotenv USER_NEW_PASSWORD}}
 @userToken = {{$dotenv USER_TOKEN}}
+@studentId = {{$dotenv STUDENT_ID}}
+@studentCode = {{$dotenv STUDENT_CODE}}
+@studentFirstname = {{$dotenv STUDENT_FIRSTNAME}}
+@studentLastname = {{$dotenv STUDENT_LASTNAME}}
+@studentUpdateFirstname = {{$dotenv STUDENT_UPDATE_FIRSTNAME}}
+@subjectId = {{$dotenv SUBJECT_ID}}
+@subjectCode = {{$dotenv SUBJECT_CODE}}
+@subjectName = {{$dotenv SUBJECT_NAME}}
+@subjectUpdateName = {{$dotenv SUBJECT_UPDATE_NAME}}
+@teacherId = {{$dotenv TEACHER_ID}}
+@teacherCode = {{$dotenv TEACHER_CODE}}
+@teacherFirstname = {{$dotenv TEACHER_FIRSTNAME}}
+@teacherLastname = {{$dotenv TEACHER_LASTNAME}}
+@teacherUpdateFirstname = {{$dotenv TEACHER_UPDATE_FIRSTNAME}}
 
 ## 1. Admin Section
 ### 1.1 Login
@@ -101,3 +115,107 @@ Content-Type: application/json
 ### 2.4 Profile
 GET http://localhost:9093/api/users/me
 Authorization: Bearer {{userToken}}
+
+
+## 3. Content Section
+
+### 3.1 Student
+### 3.1.1 Create
+POST http://localhost:9093/api/students
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+    "data": {
+        "code": "{{studentCode}}",
+        "firstname": "{{studentFirstname}}",
+        "lastname": "{{studentLastname}}"
+    }
+}
+
+### 3.1.2 List All
+GET http://localhost:9093/api/students
+Authorization: Bearer {{userToken}}
+
+### 3.1.3 List with ID
+GET http://localhost:9093/api/students/{{studentId}}
+Authorization: Bearer {{userToken}}
+
+### 3.1.4 Update
+PUT http://localhost:9093/api/students/{{studentId}}
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+    "data": {
+        "firstname": "{{studentUpdateFirstname}}"
+    }
+}
+
+
+### 3.2 Subject
+### 3.2.1 Create
+POST http://localhost:9093/api/subjects
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+    "data": {
+        "code": "{{subjectCode}}",
+        "name": "{{subjectName}}"
+    }
+}
+
+### 3.2.2 List All
+GET http://localhost:9093/api/subjects
+Authorization: Bearer {{userToken}}
+
+### 3.2.3 List with ID
+GET http://localhost:9093/api/subjects/{{subjectId}}
+Authorization: Bearer {{userToken}}
+
+### 3.2.4 Update
+PUT http://localhost:9093/api/subjects/{{subjectId}}
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+    "data": {
+        "name": "{{subjectUpdateName}}"
+    }
+}
+
+
+### 3.3 Teacher
+### 3.3.1 Create
+POST http://localhost:9093/api/teachers
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+    "data": {
+        "code": "{{teacherCode}}",
+        "firstname": "{{teacherFirstname}}",
+        "lastname": "{{teacherLastname}}"
+    }
+}
+
+### 3.3.2 List All
+GET http://localhost:9093/api/teachers
+Authorization: Bearer {{userToken}}
+
+### 3.3.3 List with ID
+GET http://localhost:9093/api/teachers/{{teacherId}}
+Authorization: Bearer {{userToken}}
+
+### 3.3.4 Update
+PUT http://localhost:9093/api/teachers/{{teacherId}}
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+    "data": {
+        "firstname": "{{teacherUpdateFirstname}}"
+    }
+}
+
